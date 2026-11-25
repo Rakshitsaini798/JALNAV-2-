@@ -1,0 +1,17 @@
+{
+  "name": "jalnavigator-village-3d",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local-only 3D view of a JalNavigator village water network (Three.js). Not part of the deployed site.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "test": "node --test tests/geo.test.js"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "vite": "6.4.6"
+  }
+}

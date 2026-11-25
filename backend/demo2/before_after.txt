@@ -1,0 +1,14 @@
+BEFORE (bad design - asset name and village copied onto every reading)
+
+  SensorReading( id, assetId, assetName, village, waterLevel, flowRate, pressure, recordedAt )
+
+  Problem:  id -> assetId -> assetName, village     (transitive dependency)
+            Rename one tank = update thousands of rows.
+
+
+AFTER (our design - name and village stored once)
+
+  SensorReading( id, assetId, waterLevel, flowRate, pressure, recordedAt )
+  Asset( id, name, type, latitude, longitude, status, village )
+
+  Every column in SensorReading depends only on id  ->  BCNF

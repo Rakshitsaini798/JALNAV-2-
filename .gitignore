@@ -1,0 +1,12 @@
+node_modules/
+.env
+.DS_Store
+*.db
+*.db-journal
+dist/
+JalNavigator_PRD.md
+*PRD*
+
+# demo tokens and cookies
+backend/demo-api/.*_token
+backend/demo-api/.cookies

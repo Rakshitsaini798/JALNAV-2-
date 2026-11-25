@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Asset {
+  id             Int             @id @default(autoincrement())
+  name           String
+  type           String
+  latitude       Float
+  longitude      Float
+  status         String
+  village        String
+  sensorReadings SensorReading[]
+  alerts         Alert[]
+}
+
+model Complaint {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  description String
+  latitude    Float?
+  longitude   Float?
+  status      String   @default("Pending")
+  createdAt   DateTime @default(now())
+  @@index([createdAt])
+  farmerAccess FarmerComplaintAccess?
+}
+
+model SensorReading {
+  id         Int      @id @default(autoincrement())
+  assetId    Int
+  waterLevel Float
+  flowRate   Float
+  pressure   Float
+  recordedAt DateTime @default(now())
+  asset      Asset    @relation(fields: [assetId], references: [id])
+  @@index([recordedAt])
+  @@index([assetId, recordedAt])
+  @@index([assetId, recordedAt(sort: Desc), id(sort: Desc)])
+}
+
+model Alert {
+  id        Int      @id @default(autoincrement())
+  assetId   Int
+  message   String
+  severity  String
+  status    String   @default("Open")
+  createdAt DateTime @default(now())
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  @@index([createdAt])
+  @@index([assetId, createdAt])
+}
+
+model FarmerComplaintAccess {
+  id             Int       @id @default(autoincrement())
+  complaintId    Int       @unique
+  token          String
+  idempotencyKey String?   @unique
+  requestHash    String?
+  createdAt      DateTime  @default(now())
+  complaint      Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+}
+
+model FarmerRateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  passwordHash  String
+  role          String         @default("operator")
+  village       String?
+  createdAt     DateTime       @default(now())
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
